@@ -1,5 +1,5 @@
 #include <xc.h>
-#include <p18f4520.h>
+#include <pic18f4520.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,8 +9,8 @@
 
 #define ADC_RES (5.0/1023.0)
 
-void interrupt high_isr(void);
-void interrupt low_priority low_isr(void);
+void __interrupt() high_isr(void);
+void __interrupt(low_priority) low_isr(void);
 
 uint8_t print_buffer[256] = {0}; // buffer to print stuff to serial
 bool adc_done = false;
@@ -123,7 +123,7 @@ void main(void){
     } 
 }
 
-void interrupt high_isr(void){
+void __interrupt() high_isr(void){
     INTCONbits.GIEH = 0;
     if(PIR2bits.CMIF == 1){
         set_led_after_com();
@@ -136,7 +136,7 @@ void interrupt high_isr(void){
     INTCONbits.GIEH = 1;
 }
 
-void interrupt low_priority low_isr(void){
+void __interrupt(low_priority) low_isr(void){
     INTCONbits.GIEH = 0;
     if(PIR1bits.TMR2IF == 1){
        /// T2CONbits.TMR2ON = 0;
